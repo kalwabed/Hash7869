@@ -1,7 +1,21 @@
+import { TamaguiProvider, createTamagui } from '@tamagui/core';
+import '@tamagui/core/reset.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Button, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Button } from 'tamagui'
+
+import { config } from '@tamagui/config/v3'
+
+// you usually export this from a tamagui.config.ts file
+const tamaguiConfig = createTamagui(config)
+
+// make TypeScript type everything based on your config
+type Conf = typeof tamaguiConfig
+declare module '@tamagui/core' {
+  interface TamaguiCustomConfig extends Conf { }
+}
 
 const queryClient = new QueryClient()
 
@@ -19,16 +33,18 @@ export default function App() {
   }
   return (
     <QueryClientProvider client={queryClient}>
-      <View style={styles.container}>
-        <Text>Open up App.tsx to start working on your app!</Text>
-        <Button title='Click me' onPress={checkApi} />
-        <StatusBar style="auto" />
-        <FlatList
-          data={data}
-          renderItem={({ item }) => <Text>{item.title}</Text>}
-          keyExtractor={item => item.id}
-        />
-      </View>
+      <TamaguiProvider config={tamaguiConfig}>
+        <View style={styles.container}>
+          <Text>Open up App.tsx to start working on your app!</Text>
+          <Button onPress={checkApi}>Check</Button>
+          <StatusBar style="auto" />
+          <FlatList
+            data={data}
+            renderItem={({ item }) => <Text>{item.title}</Text>}
+            keyExtractor={item => item.id}
+          />
+        </View>
+      </TamaguiProvider>
     </QueryClientProvider>
   );
 }
